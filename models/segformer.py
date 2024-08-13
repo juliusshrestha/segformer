@@ -1,6 +1,6 @@
 import keras
 import tensorflow
-from tensorflow import ops
+from keras import ops
 from .modules import MixVisionTransformer
 from .Head import SegFormerHead
 from .utils import ResizeLayer
