@@ -8,7 +8,7 @@ class ResizeLayer(keras.layers.Layer):
         self.width = width
 
     def call(self, inputs):
-        resized = tf.keras.ops.image.resize(
+        resized = tf.image.resize(
             inputs,
             size=(self.height, self.width),
             interpolation="bilinear",
@@ -24,8 +24,8 @@ class DropPath(keras.layers.Layer):
     def call(self, x, training=None):
         if training:
             keep_prob = 1 - self.drop_path
-            shape = (tf.keras.ops.shape(x)[0],) + (1,) * (len(tf.keras.ops.shape(x)) - 1)
+            shape = (tf.shape(x)[0],) + (1,) * (len(tf.shape(x)) - 1)
             random_tensor = keep_prob + keras.random.uniform(shape, 0, 1)
-            random_tensor = tf.keras.ops.floor(random_tensor)
+            random_tensor = tf.floor(random_tensor)
             return (x / keep_prob) * random_tensor
         return x
