@@ -40,16 +40,16 @@ class SegFormerHead(keras.layers.Layer):
         self.linear_pred = keras.layers.Conv2D(num_classes, kernel_size=1)
 
     def call(self, inputs):
-        H = tf.keras.ops.shape(inputs[0])[1]
-        W = tf.keras.ops.shape(inputs[0])[2]
+        H = tf.shape(inputs[0])[1]
+        W = tf.shape(inputs[0])[2]
         outputs = []
 
         for x, mlps in zip(inputs, self.linear_layers):
             x = mlps(x)
-            x = tf.keras.ops.image.resize(x, size=(H, W), interpolation="bilinear")
+            x = tf.image.resize(x, size=(H, W), interpolation="bilinear")
             outputs.append(x)
 
-        x = self.linear_fuse(tf.keras.ops.concatenate(outputs[::-1], axis=3))
+        x = self.linear_fuse(tf.concatenate(outputs[::-1], axis=3))
         x = self.dropout(x)
         x = self.linear_pred(x)
 
