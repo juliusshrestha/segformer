@@ -1,6 +1,5 @@
 import keras
-import tensorflow
-from keras import ops
+import tensorflow as tf
 from .modules import MixVisionTransformer
 from .Head import SegFormerHead
 from .utils import ResizeLayer
@@ -52,7 +51,7 @@ def SegFormer_B0(input_shape, num_classes):
     )(x)
 
     x = ResizeLayer(input_shape[0], input_shape[1])(x)
-    x = ops.softmax(x)
+    x = tf.keras.ops.sigmoid(x)
     return keras.Model(inputs=input_layer, outputs=x)
 
 
@@ -69,7 +68,7 @@ def SegFormer_B1(input_shape, num_classes):
     )(x)
 
     x = ResizeLayer(input_shape[0], input_shape[1])(x)
-    x = ops.softmax(x)
+    x = tf.keras.ops.sigmoid(x)
     return keras.Model(inputs=input_layer, outputs=x)
 
 
@@ -86,7 +85,7 @@ def SegFormer_B2(input_shape, num_classes):
     )(x)
 
     x = ResizeLayer(input_shape[0], input_shape[1])(x)
-    x = ops.softmax(x)
+    x = tf.keras.ops.sigmoid(x)
     return keras.Model(inputs=input_layer, outputs=x)
 
 
@@ -103,7 +102,7 @@ def SegFormer_B3(input_shape, num_classes):
     )(x)
 
     x = ResizeLayer(input_shape[0], input_shape[1])(x)
-    x = ops.softmax(x)
+    x = tf.keras.ops.sigmoid(x)
     return keras.Model(inputs=input_layer, outputs=x)
 
 
@@ -120,7 +119,7 @@ def SegFormer_B4(input_shape, num_classes):
     )(x)
 
     x = ResizeLayer(input_shape[0], input_shape[1])(x)
-    x = ops.softmax(x)
+    x = tf.keras.ops.sigmoid(x)
     return keras.Model(inputs=input_layer, outputs=x)
 
 
@@ -137,5 +136,5 @@ def SegFormer_B5(input_shape, num_classes):
     )(x)
 
     x = ResizeLayer(input_shape[0], input_shape[1])(x)
-    x = ops.softmax(x)
+    x = tf.keras.ops.sigmoid(x)
     return keras.Model(inputs=input_layer, outputs=x)
