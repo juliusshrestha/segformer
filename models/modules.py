@@ -17,11 +17,11 @@ class DWConv(keras.layers.Layer):
         )
 
     def call(self, x, H, W):
-        get_shape_1 = tf.keras.ops.shape(x)
-        x = tf.keras.ops.reshape(x, (get_shape_1[0], H, W, get_shape_1[-1]))
+        get_shape_1 = tf.shape(x)
+        x = tf.reshape(x, (get_shape_1[0], H, W, get_shape_1[-1]))
         x = self.dwconv(x)
-        get_shape_2 = tf.keras.ops.shape(x)
-        x = tf.keras.ops.reshape(
+        get_shape_2 = tf.shape(x)
+        x = tf.reshape(
             x, (get_shape_2[0], get_shape_2[1] * get_shape_2[2], get_shape_2[3])
         )
         return x
@@ -119,11 +119,11 @@ class OverlapPatchEmbed(keras.layers.Layer):
 
     def call(self, x):
         x = self.conv(self.pad(x))
-        get_shapes = tf.keras.ops.shape(x)
+        get_shapes = tf.shape(x)
         H = get_shapes[1]
         W = get_shapes[2]
         C = get_shapes[3]
-        x = tf.keras.ops.reshape(x, (-1, H * W, C))
+        x = tf.reshape(x, (-1, H * W, C))
         x = self.norm(x)
         return x, H, W
 
@@ -170,7 +170,7 @@ class MixVisionTransformer(keras.layers.Layer):
             filters=embed_dims[3],
         )
 
-        dpr = [x for x in tf.keras.ops.linspace(0.0, drop_path_rate, sum(depths))]
+        dpr = [x for x in tf.linspace(0.0, drop_path_rate, sum(depths))]
         cur = 0
         self.block1 = [
             Block(
@@ -236,7 +236,7 @@ class MixVisionTransformer(keras.layers.Layer):
         self.norm4 = keras.layers.LayerNormalization(epsilon=1e-05)
 
     def call_features(self, x):
-        B = tf.keras.ops.shape(x)[0]
+        B = tf.shape(x)[0]
         outs = []
 
         # stage 1
@@ -244,7 +244,7 @@ class MixVisionTransformer(keras.layers.Layer):
         for i, blk in enumerate(self.block1):
             x = blk(x, H=H, W=W)
         x = self.norm1(x)
-        x = tf.keras.ops.reshape(x, (B, H, W, tf.keras.ops.shape(x)[-1]))
+        x = tf.reshape(x, (B, H, W, tf.shape(x)[-1]))
         outs.append(x)
 
         # stage 2
@@ -252,7 +252,7 @@ class MixVisionTransformer(keras.layers.Layer):
         for i, blk in enumerate(self.block2):
             x = blk(x, H=H, W=W)
         x = self.norm2(x)
-        x = tf.keras.ops.reshape(x, (B, H, W, tf.keras.ops.shape(x)[-1]))
+        x = tf.reshape(x, (B, H, W, tf.shape(x)[-1]))
         outs.append(x)
 
         # stage 3
@@ -260,7 +260,7 @@ class MixVisionTransformer(keras.layers.Layer):
         for i, blk in enumerate(self.block3):
             x = blk(x, H=H, W=W)
         x = self.norm3(x)
-        x = tf.keras.ops.reshape(x, (B, H, W, tf.keras.ops.shape(x)[-1]))
+        x = tf.reshape(x, (B, H, W, tf.shape(x)[-1]))
         outs.append(x)
 
         # stage 4
@@ -268,7 +268,7 @@ class MixVisionTransformer(keras.layers.Layer):
         for i, blk in enumerate(self.block4):
             x = blk(x, H=H, W=W)
         x = self.norm4(x)
-        x = tf.keras.ops.reshape(x, (B, H, W, tf.keras.ops.shape(x)[-1]))
+        x = tf.reshape(x, (B, H, W, tf.shape(x)[-1]))
         outs.append(x)
 
         return outs
