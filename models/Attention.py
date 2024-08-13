@@ -1,5 +1,6 @@
 import keras
-from keras import ops
+import tensorflow as tf
+
 import math
 
 
@@ -44,43 +45,43 @@ class Attention(keras.layers.Layer):
         H,
         W,
     ):
-        get_shape = ops.shape(x)
+        get_shape = tf.keras.ops.shape(x)
         B = get_shape[0]
         C = get_shape[2]
 
         q = self.q(x)
-        q = ops.reshape(
-            q, (ops.shape(q)[0], -1, self.num_heads, self.head_dim)
+        q = tf.keras.ops.reshape(
+            q, (tf.keras.ops.shape(q)[0], -1, self.num_heads, self.head_dim)
         )
-        q = ops.transpose(q, axes=[0, 2, 1, 3])
+        q = tf.keras.ops.transpose(q, axes=[0, 2, 1, 3])
 
         if self.sr_ratio > 1:
-            x = ops.reshape(x, (B, H, W, C))
+            x = tf.keras.ops.reshape(x, (B, H, W, C))
             x = self.sr(x)
-            x = ops.reshape(x, (B, -1, C))
+            x = tf.keras.ops.reshape(x, (B, -1, C))
             x = self.norm(x)
 
         k = self.k(x)
-        k = ops.reshape(
-            k, (ops.shape(k)[0], -1, self.num_heads, self.head_dim)
+        k = tf.keras.ops.reshape(
+            k, (tf.keras.ops.shape(k)[0], -1, self.num_heads, self.head_dim)
         )
-        k = ops.transpose(k, axes=[0, 2, 1, 3])
+        k = tf.keras.ops.transpose(k, axes=[0, 2, 1, 3])
 
         v = self.v(x)
-        v = ops.reshape(
-            v, (ops.shape(v)[0], -1, self.num_heads, self.head_dim)
+        v = tf.keras.ops.reshape(
+            v, (tf.keras.ops.shape(v)[0], -1, self.num_heads, self.head_dim)
         )
-        v = ops.transpose(v, axes=[0, 2, 1, 3])
+        v = tf.keras.ops.transpose(v, axes=[0, 2, 1, 3])
 
-        attn = ops.matmul(q, k)
-        scale = ops.cast(self.sqrt_of_units, dtype=attn.dtype)
-        attn = ops.divide(attn, scale)
+        attn = tf.keras.ops.matmul(q, k)
+        scale = tf.keras.ops.cast(self.sqrt_of_units, dtype=attn.dtype)
+        attn = tf.keras.ops.divide(attn, scale)
 
-        attn = ops.softmax(attn, axis=-1)
+        attn = tf.keras.ops.softmax(attn, axis=-1)
         attn = self.attn_drop(attn)
-        x = ops.matmul(attn, v)
-        x = ops.transpose(x, axes=[0, 2, 1, 3])
-        x = ops.reshape(x, (B, -1, self.units))
+        x = tf.keras.ops.matmul(attn, v)
+        x = tf.keras.ops.transpose(x, axes=[0, 2, 1, 3])
+        x = tf.keras.ops.reshape(x, (B, -1, self.units))
         x = self.proj(x)
         x = self.proj_drop(x)
         return x
