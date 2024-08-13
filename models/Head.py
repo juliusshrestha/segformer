@@ -1,5 +1,5 @@
 import keras
-from keras import ops
+import tensorflow as tf
 
 class MLP(keras.layers.Layer):
     def __init__(self, decode_dim):
@@ -40,16 +40,16 @@ class SegFormerHead(keras.layers.Layer):
         self.linear_pred = keras.layers.Conv2D(num_classes, kernel_size=1)
 
     def call(self, inputs):
-        H = ops.shape(inputs[0])[1]
-        W = ops.shape(inputs[0])[2]
+        H = tf.keras.ops.shape(inputs[0])[1]
+        W = tf.keras.ops.shape(inputs[0])[2]
         outputs = []
 
         for x, mlps in zip(inputs, self.linear_layers):
             x = mlps(x)
-            x = ops.image.resize(x, size=(H, W), interpolation="bilinear")
+            x = tf.keras.ops.image.resize(x, size=(H, W), interpolation="bilinear")
             outputs.append(x)
 
-        x = self.linear_fuse(ops.concatenate(outputs[::-1], axis=3))
+        x = self.linear_fuse(tf.keras.ops.concatenate(outputs[::-1], axis=3))
         x = self.dropout(x)
         x = self.linear_pred(x)
 
